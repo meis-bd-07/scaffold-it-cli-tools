@@ -1,0 +1,16 @@
+#!/usr/bin/env node
+
+/* straight line */
+require('../dist/index.js').main(); // assuming tsup outputs index.cjs
+// require('../dist/index.js');
+// require('../dist/index.cjs');
+
+/* slightly dynamic to manage version later */
+// (async () => {
+//   try {
+//     await import('../dist/index.js');
+//   } catch (e) {
+//     console.error('Error loading CLI:', e);
+//     process.exit(1);
+//   }
+// })();

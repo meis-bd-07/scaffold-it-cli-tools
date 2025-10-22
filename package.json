@@ -1,0 +1,56 @@
+{
+  "name": "scaffold-it",
+  "version": "0.1.0",
+  "description": "Project scaffolding CLI for React / React Native / Node projects",
+  "bin": {
+    "scaffold-it": "bin/scaffold-it",
+    "scaffoldIt": "bin/scaffold-it"
+  },
+  "scripts": {
+    "build-v1": "tsup src/index.ts --format cjs --out-dir dist --clean --dts false",
+    "build-v2": "tsup src/index.ts --format cjs --out-dir dist --clean",
+    "build-v3": "tsup src/index.ts --format cjs --out-dir dist --clean --dts",
+    "build": "tsup",
+    "dev-1": "nodemon --exec ts-node src/index.ts",
+    "dev-2": "nodemon --exec ts-node -r tsconfig-paths/register src/index.ts",
+    "dev": "nodemon --require ./ts-register src/index.ts",
+    "lint": "eslint . --ext .ts,.tsx",
+    "prepare": "husky install",
+    "start": "node dist/index.js",
+    "executable": "chmod +x bin/scaffold-it",
+    "qb": "rm -rf dist && npm run build && node dist/index.js --help && npm link && which scaffold-it && scaffold-it hello"
+  },
+  "files": [
+    "dist",
+    "bin"
+  ],
+  "keywords": [
+    "cli",
+    "scaffold",
+    "react",
+    "react-native"
+  ],
+  "author": "Mohammad Erfanul Islam Sifat",
+  "license": "MIT",
+  "engines": {
+    "node": ">=16"
+  },
+  "dependencies": {
+    "chalk": "^5.6.2",
+    "commander": "^14.0.1",
+    "enquirer": "^2.4.1",
+    "esbuild": "^0.25.11",
+    "execa": "^9.6.0",
+    "glob": "^11.0.3",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.4",
+    "ts-node-dev": "^2.0.0",
+    "tsup": "^8.5.0",
+    "typescript": "^5.9.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10",
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0"
+  }
+}
