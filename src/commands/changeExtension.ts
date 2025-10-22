@@ -1,22 +1,15 @@
+import checkDependencyFromJson from '@utils/check-dependencies-from-json';
+import checkDependencyFromFile from '@utils/check-dependency-from-file';
+import isFileExist from '@utils/check-file-exist';
 import checkNodeVersion from '@utils/check-node-version';
 import checkPkgManagerVersion from '@utils/check-npm-version';
-import detectPkgManager from '@utils/detect-pkg-manager';
 import findProjectRoot from '@utils/find-project-root';
-import getFiles from '@utils/get-files';
+import readJSONFile from '@utils/read-json';
 import chalk from 'chalk';
-import fs from 'fs/promises';
-import path from 'path';
+import { IChangeExtensionCommand } from 'types/change-extension';
+import { frameworkDeps } from 'types/core';
 
 /* 
-what it need to check here:
-. check node version ≥ 18.x (LTS preferred) - done
-. check npm / yarn / pnpm version - done
-
-1. check root - done
-2. check package.json - done
-3. determine npm / yarn / pnpm file exit - done
-4. check typescript active in code with tsconfig.json
-5. check dependencies and dev-dependencies for typescript
 6. update tsconfig.json from allowing of ts-ignore globally
 7. update all file from targeted folder default src
 8. add @ts-ignore or related setup for allowing no usages of type
@@ -47,20 +40,38 @@ declare module 'some-broken-lib';
 }
 */
 
-export async function changeExt(targetDir: string) {
+async function changeExtension(props: IChangeExtensionCommand) {
+  const { targetDir, framework, packageManager = 'npm', ignoreDeps = false } = props
   try{
     const root = await findProjectRoot();
-    console.log(chalk.dim(`Project root: ${root}`));
+    console.log(chalk.dim(`🧩 Project root: ${root}`));
 
     await checkNodeVersion();
-    const projectPackageManager = detectPkgManager(root)
-    const npmVersion = await checkPkgManagerVersion(projectPackageManager);
+    await checkPkgManagerVersion(packageManager);
 
+    const pkgPath = await isFileExist('package.json', 'file', root);
+    const tsConfig = await isFileExist('tsconfig.json', 'file', root);
+    const pkgData = await checkDependencyFromFile(pkgPath, 'typescript', { needReturn: true });
 
+    if(!ignoreDeps){
+      const hasDependencyIssue = checkDependencyFromJson(pkgData, frameworkDeps[framework]);
+      if(hasDependencyIssue){ process.exit(1) }
+    }
+    else {
+      console.log(chalk.yellow(`⚠️  Ignoring Framework (${framework}) dependency check.`));
+    }
+    const tsConfigData = await readJSONFile(tsConfig, true);
+    console.log('tsConfigData:', tsConfigData)
+    /* TODO: update necessary field for auto type check */
+    /* 
+      fields: 
+      "strict": false, // disable strict mode at first to avoid 1000+ errors
+      "noImplicitAny": false 
+    */
 
-
-    
-
+    /* TODO: check file / folder exist in .gitignore */
+    /* TODO: avoid node_modules, dist, bin, build, .vscode, .husky etc */
+    /* if target folder is root then show a list for multiple check for folders and files */
   }
   catch(err: unknown){
     console.error(chalk.red(`Error: ${err instanceof Error ? err.message : err}`));
@@ -68,9 +79,13 @@ export async function changeExt(targetDir: string) {
   }
 
 
-  const absoluteTarget = path.resolve(process.cwd(), targetDir);
-  console.log(`Targeting: ${absoluteTarget}`);
-  const files = await getFiles(absoluteTarget);
+  // const absoluteTarget = path.resolve(process.cwd(), targetDir);
+  // console.log(`Targeting: ${absoluteTarget}`);
+  // const files = await getFiles(absoluteTarget);
+
+  /* for root folder show another checkbox to select folder as multiple */
+  /* try to avoid those file / folder that in gitignore */
+
   // if (!files.length) {
   //   console.log('No .js files found to convert.');
   //   return;
@@ -100,5 +115,7 @@ export async function changeExt(targetDir: string) {
   //     console.log(`${path.relative(process.cwd(), file)} -> ${path.relative(process.cwd(), newPath)}`);
   //   }
   // }
-  console.log('Conversion done. Please review code — manual fixes likely needed (types, imports).');
+  // console.log('Conversion done. Please review code — manual fixes likely needed (types, imports).');
 }
+
+export default changeExtension

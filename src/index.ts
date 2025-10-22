@@ -4,7 +4,6 @@ import { Command } from 'commander';
 // import { changeExt } from './commands/changeExtension';
 // import testCli from 'register-programs/test-cli';
 // import aboutCli from 'register-programs/about-cli';
-import abortCommandHandler from '@utils/abort-command';
 import aboutCli from '@rp/about-cli';
 import testCli from '@rp/test-cli';
 import registerChangeExtension from '@rp/change-ext';
@@ -17,7 +16,6 @@ import registerChangeExtension from '@rp/change-ext';
 
 const program = new Command();
 
-abortCommandHandler();
 
 export async function main() {
   /* 
