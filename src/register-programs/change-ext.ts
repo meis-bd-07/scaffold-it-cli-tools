@@ -11,10 +11,6 @@ import { IChangeExtensionOpts, IFramework, IPackageManager } from "types/change-
         scaffold-it change-extension --path <path> --ignore-deps
 */
 
-interface MyMultiSelectPrompt extends prompt {
-  hint?: string;
-}
-
 const registerChangeExtension = async (program: Command) => {
     return program
         .command('change-extension')
@@ -23,8 +19,9 @@ const registerChangeExtension = async (program: Command) => {
         .option('--ignore-deps', 'Ignore dependencies')
         .action(async (opts: IChangeExtensionOpts) => {
             abortCommandHandler();
+            // const folders = await getAllFolders('./', false);
             try{
-                const answers: { target: string; framework: IFramework; package_manager: IPackageManager, tasks: string[]; } = await prompt([
+                const answers: { target: string; framework: IFramework; package_manager: IPackageManager } = await prompt([
                     {
                         type: 'select',
                         name: 'package_manager',
@@ -37,9 +34,22 @@ const registerChangeExtension = async (program: Command) => {
                     },
                     {
                         type: 'input',
+                        // type: 'autocomplete',
                         name: 'target',
                         message: 'Which folder should we target?',
                         initial: opts.path || './src',
+                        // validate: async(value) => {
+                        //     const folders = await getSubfolders('./');
+                        //     return folders.includes(value) || `Folder not found! Choose from: ${folders.join(', ')}`;
+                        // },
+                        // choices: folders,
+                        // suggest: (input: string, choices: {name: string, value: string}[]) => {
+                        //     console.log('input', input)
+                        //     if(!input){
+                        //         return []
+                        //     }
+                        //     return choices.filter(choice => choice.name.includes(input));
+                        // }
                     },
                     {
                         type: 'select',
@@ -53,18 +63,8 @@ const registerChangeExtension = async (program: Command) => {
                             'Nest.js',
                             'Next.js',
                         ],
-                    },
-                    {
-                        type: 'multiselect', // <-- Multi-select
-                        name: 'tasks',
-                        message: 'Choose your tasks:',
-                        choices: ['Add', 'Sub', 'Mul', 'Div'],
-                        multiple: true,
-                        hint: '(Use <space> to select, <return> to submit)',
-                    },
+                    }
                 ])
-
-                console.log('tasks', answers.tasks)
                 await changeExtension({
                     targetDir: answers.target,
                     framework: answers.framework,

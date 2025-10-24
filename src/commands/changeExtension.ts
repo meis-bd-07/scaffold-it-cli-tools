@@ -6,37 +6,30 @@ import checkPkgManagerVersion from '@utils/check-npm-version';
 import findProjectRoot from '@utils/find-project-root';
 import readJSONFile from '@utils/read-json';
 import chalk from 'chalk';
+import { prompt } from 'enquirer';
 import { IChangeExtensionCommand } from 'types/change-extension';
 import { frameworkDeps } from 'types/core';
+import path from 'path';
+import getFiles from '@utils/get-files';
+import fs from 'fs';
+// import walkDirectories from '@utils/walk-directories';
+
+// import inquirer from 'inquirer';
+import inquirer from 'inquirer';
+import fileTreeSelection from 'inquirer-file-tree-selection-prompt';
+import getAllFolders from '@utils/get-folder';
+import createFile from '@utils/create-file';
 
 /* 
-6. update tsconfig.json from allowing of ts-ignore globally
 7. update all file from targeted folder default src
-8. add @ts-ignore or related setup for allowing no usages of type
-9. show some notes about adding type and remove ts-ignore from global setup
 10. check eslint and add ts-ignore option
-11. create global.d.ts and add into tsconfig
 */
 
 /* 
-// @ts-nocheck
-
-@ts-ignore
-@ts-expect-error
-
-
 {
   "rules": {
     "@typescript-eslint/ban-ts-comment": "off"
   }
-}
-
----
-// global.d.ts
-declare module 'some-broken-lib';
-
-{
-  "include": ["src", "global.d.ts"]
 }
 */
 
@@ -60,18 +53,132 @@ async function changeExtension(props: IChangeExtensionCommand) {
     else {
       console.log(chalk.yellow(`⚠️  Ignoring Framework (${framework}) dependency check.`));
     }
-    const tsConfigData = await readJSONFile(tsConfig, true);
-    console.log('tsConfigData:', tsConfigData)
-    /* TODO: update necessary field for auto type check */
-    /* 
-      fields: 
-      "strict": false, // disable strict mode at first to avoid 1000+ errors
-      "noImplicitAny": false 
-    */
 
-    /* TODO: check file / folder exist in .gitignore */
-    /* TODO: avoid node_modules, dist, bin, build, .vscode, .husky etc */
-    /* if target folder is root then show a list for multiple check for folders and files */
+
+    let tsConfigData = await readJSONFile(tsConfig, true);
+    createFile(root, "global.d.ts", `// declare module 'some-broken-lib';`);
+    const activeJs = {
+      // Enable JavaScript files
+      compilerOptions: {
+        "allowJs": true,
+        "checkJs": false, 
+        "strict": false,
+        "noImplicitAny": false, 
+        "skipLibCheck": true, 
+        "noEmit": true,         
+      },
+      include: ["src", "global.d.ts"],
+      exclude: ["node_modules", "dist", "build"]
+    }
+    createFile(root, "tsconfig.jsonc", activeJs, true);
+    tsConfigData = {...tsConfigData, "extends": Array.from(new Set([...(tsConfigData.extends || []), "./tsconfig.jsonc"]))}
+    fs.writeFileSync(tsConfig, JSON.stringify(tsConfigData, null, 2), 'utf8');
+    console.log(chalk.yellowBright('✨ Modify tsconfig.json for enable of no type checking !'))
+
+
+    if(targetDir === '' || targetDir === '.' || targetDir === '/' || targetDir === './'){
+      /* get all file folder and files */
+      const absoluteTarget = path.resolve(process.cwd(), targetDir === "/" ? '.' : targetDir);
+      console.log(`Targeting: ${absoluteTarget}`);
+      const files = await getFiles(absoluteTarget);
+      if (!files.length) {
+        console.log('No .js files found to convert.');
+        process.exit(1)
+      }
+
+      const folders = await getAllFolders(absoluteTarget, false);
+      console.log('folders', folders)
+
+      // Register the prompt type
+      // inquirer.registerPrompt('file-tree-selection', fileTreeSelection);
+
+      // const IGNORED_DIRS = ['node_modules', 'dist', 'build', '.git'];
+
+
+  //     const IGNORED_DIRS = ['node_modules', 'dist', 'build', '.git', '.husky', '.vscode', 'bin', 'dist', 'build'];
+  //     const ROOT_DIR = path.resolve(absoluteTarget); // or your actual base dir
+
+  //     // Check if root exists
+  //     if (!fs.existsSync(ROOT_DIR)) {
+  //       console.error(`❌ Root folder not found: ${ROOT_DIR}`);
+  //       process.exit(1);
+  //     }
+
+  //     const answers = await inquirer.prompt([
+  //   {
+  //     type: 'file-tree-selection',
+  //     name: 'selectedFiles',
+  //     message: 'Select files or folders:',
+  //     root: ROOT_DIR,
+  //     multiple: true,
+  //     onlyShowDir: false,
+  //     filter: (itemPath: string) => {
+  //       const base = path.dirname(itemPath);
+
+  //       // 🚫 Ignore unwanted directories
+  //       if (IGNORED_DIRS.includes(base.replace('/', ''))) return false;
+
+  //       // ✅ Always include directories (to allow navigation)
+  //       try {
+  //         const stats = fs.statSync(itemPath);
+  //         if (stats.isDirectory()) return true;
+  //       } catch {
+  //         return false;
+  //       }
+
+  //       // ✅ Only include .js / .jsx files
+  //       return /\.(jsx?)$/.test(base);
+  //     },
+  //   },
+  // ]);
+
+  // if (!answers.selectedFiles || answers.selectedFiles.length === 0) {
+  //   console.log('\n⚠️  No files selected.\n');
+  //   return;
+  // }
+
+  // console.log('\n✅ Selected paths:\n', answers.selectedFiles);
+
+      // const _files = walkDirectories(absoluteTarget);
+      
+      // const answers: { fileFolders: string[] } = await prompt([
+      //   {
+      //     type: 'multiselect', // <-- Multi-select
+      //     name: 'fileFolders',
+      //     message: 'Choose your files & folders:',
+      //     choices: _files,
+      //     multiple: true,
+      //     /* @ts-ignore */
+      //     hint: '(Use <space> to select, <return> to submit)',
+      //   },
+      // ])
+      // console.log('answers', answers)
+
+
+       /* TODO: check file / folder exist in .gitignore */
+      /* TODO: avoid node_modules, dist, bin, build, .vscode, .husky etc */
+      /* if target folder is root then show a list for multiple check for folders and files */
+    }
+    else{
+      const absoluteTarget = path.resolve(process.cwd(), targetDir);
+      console.log(chalk.dim(`Targeting directory: ${absoluteTarget}`));
+      const files = await getFiles(absoluteTarget);
+      if (!files.length) {
+        console.log(chalk.bgBlueBright(`🚫 No .js/.jsx files found under src to rename automatically.`));
+        process.exit(1)
+      }
+      let impactedFile = 0;
+      for (const file of files){
+        const ext = path.extname(file);
+        const base = file.slice(0, -ext.length);
+        const newExt = ext === '.js' ? '.ts' : '.tsx';
+        const newPath = base + newExt;
+        fs.renameSync(file, newPath);
+        impactedFile++;
+        // console.log('Renamed:', path.relative(root, f), '→', path.relative(root, newPath));
+      }
+      console.log(chalk.bgGreen(`✨ Total ${impactedFile} ${impactedFile > 2 ? 'files' : 'file'} impacted.`))
+    }
   }
   catch(err: unknown){
     console.error(chalk.red(`Error: ${err instanceof Error ? err.message : err}`));
