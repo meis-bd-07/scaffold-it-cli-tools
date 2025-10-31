@@ -16,7 +16,6 @@ import registerChangeExtension from '@rp/change-ext';
 
 const program = new Command();
 
-
 export async function main() {
   /* 
     about this cli command 

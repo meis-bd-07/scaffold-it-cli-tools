@@ -12,27 +12,14 @@
     "resolveJsonModule": true,
     "baseUrl": "./src",
     "paths": {
-      "@commands/*": [
-        "./commands/*"
-      ],
-      "@utils/*": [
-        "./utils/*"
-      ],
-      "@rp/*": [
-        "./register-programs/*"
-      ],
-      "@types/*": [
-        "./types/*"
-      ],
+      "@commands/*": ["./commands/*"],
+      "@utils/*": ["./utils/*"],
+      "@rp/*": ["./register-programs/*"],
+      "@type/*": ["type/*.d.ts"],
+      "@constants/*": ["./constants/*"],
     }
   },
-  "include": [
-    "src"
-  ],
-  "exclude": [
-    "node_modules"
-  ],
-  "extends": [
-    "./tsconfig.jsonc"
-  ]
+  "include": ["src"],
+  "exclude": ["node_modules"],
+  "extends": ["./tsconfig.jsonc"]
 }

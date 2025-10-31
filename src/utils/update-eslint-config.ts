@@ -1,8 +1,8 @@
 import path from 'path';
 import fs from 'fs';
 import chalk from 'chalk';
-import { CONFIG_FILES, eslintIgnoreRules } from '@types/core';
-import { IAnyObject } from '@types/type';
+import { IAnyObject } from '@type/global';
+import { CONFIG_FILES, eslintIgnoreRules } from '@constants/core';
 
 function updateEslintConfig(filePath:string, rules: IAnyObject) {
   const ext = path.extname(filePath);

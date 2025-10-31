@@ -1,15 +1,24 @@
 import changeExtension from "@commands/changeExtension";
+import { IChangeExtensionOpts, IFramework, IPackageManager } from "@type/change-extension";
 import abortCommandHandler from "@utils/abort-command";
 import chalk from "chalk";
 import { Command } from "commander";
 import { prompt } from "enquirer";
-import { IChangeExtensionOpts, IFramework, IPackageManager } from "types/change-extension";
 
-/* 
-    command: 
-        scaffold-it change-extension -p <path> --ignore-deps --ignore-test-file
-        scaffold-it change-extension --path <path> --ignore-deps --ignore-test-file
-*/
+/*
+ * Command Usage:
+ *   scaffold-it change-extension -p <path> --ignore-deps --ignore-test-file
+ *   scaffold-it change-extension --path <path> --ignore-deps --ignore-test-file
+ *
+ * Description:
+ *   Changes the file extensions within the specified path.
+ *   Use the following flags to customize behavior:
+ *     --ignore-deps          Excludes dependency files from processing
+ *     --ignore-test-file     Skips test files during extension updates
+ *
+ * Example:
+ *   scaffold-it change-extension -p ./src --ignore-deps --ignore-test-file
+ */
 
 const registerChangeExtension = async (program: Command) => {
     return program

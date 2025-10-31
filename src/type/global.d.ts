@@ -1,4 +1,3 @@
-/* types */
 export type IAnyObject<T extends Record<string, unknown> = Record<string, unknown>> = T;
 
 export type IPackageJsonCore = IAnyObject<{

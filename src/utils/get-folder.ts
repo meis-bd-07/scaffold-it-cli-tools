@@ -1,7 +1,7 @@
 import { glob } from "glob";
 import fs from "fs/promises";
 import path from "path";
-import { IGNORED_DIRS } from "types/core";
+import { IGNORED_DIRS } from "@constants/core";
 
 async function getFoldersCustom(dir: string): Promise<{ name: string; value: string }[]> {
   const entries = await fs.readdir(dir, { withFileTypes: true });

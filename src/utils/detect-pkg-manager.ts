@@ -1,4 +1,4 @@
-const path = require('path');
+import path from 'path';
 
 function fsSyncExists(p: string){ try { require('fs').accessSync(p); return true;} catch { return false;} }
 

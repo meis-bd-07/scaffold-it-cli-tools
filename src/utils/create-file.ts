@@ -3,7 +3,7 @@ import fs from "fs";
 import path from "path";
 import readJSONFile from "./read-json";
 import deepMerge from "./deep-merge";
-import { IAnyObject } from "@types/type";
+import { IAnyObject } from "@type/global";
 
 const createFile = async (dir: string, fileName: string, content: null | string | IAnyObject = null, activeDeepMerge: boolean = false) => {
     const filePath = path.join(dir, fileName);

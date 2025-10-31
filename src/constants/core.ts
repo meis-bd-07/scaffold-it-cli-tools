@@ -1,4 +1,3 @@
-/* data */
 export const IGNORED_DIRS = ['node_modules', 'dist', 'build', 'bin', 'dist', 'build', '.git', '.husky', '.vscode'];
 export const reactTypes = ['react', 'react-dom', '@types/react', '@types/react-dom'];
 export const reactNativeTypes = ['react', 'react-native', '@types/react', '@types/react-native'];

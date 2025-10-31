@@ -7,15 +7,14 @@ import findProjectRoot from '@utils/find-project-root';
 import readJSONFile from '@utils/read-json';
 import chalk from 'chalk';
 import { prompt } from 'enquirer';
-import { IChangeExtensionCommand } from 'types/change-extension';
-import { frameworkDeps } from 'types/core';
+import { IChangeExtensionCommand } from 'type/change-extension';
 import path from 'path';
 import getFiles, { getFilesV2 } from '@utils/get-files';
 import fs from 'fs';
 import getAllFolders from '@utils/get-folder';
 import createFile from '@utils/create-file';
 import findAndUpdateEslintConfig from '@utils/update-eslint-config';
-
+import { frameworkDeps } from '@constants/core';
 
 async function changeExtension(props: IChangeExtensionCommand) {
   const { targetDir, framework, packageManager = 'npm', ignoreDeps = false, ignoreTest = true } = props
