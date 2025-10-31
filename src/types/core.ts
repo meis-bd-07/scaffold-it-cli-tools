@@ -1,14 +1,3 @@
-/* types */
-export type IAnyObject<T extends Record<string, unknown> = Record<string, unknown>> = T;
-
-export type IPackageJsonCore = IAnyObject<{
-    dependencies?: Record<string, string>;
-    devDependencies?: Record<string, string>;
-    scripts?: Record<string, string>;
-    [key: string]: unknown;
-}>;
-
-
 /* data */
 export const IGNORED_DIRS = ['node_modules', 'dist', 'build', 'bin', 'dist', 'build', '.git', '.husky', '.vscode'];
 export const reactTypes = ['react', 'react-dom', '@types/react', '@types/react-dom'];
@@ -22,4 +11,18 @@ export const frameworkDeps = {
     'Node.js': nodeTypes,
     'Nest.js': [],
     'Next.js': [],
+}
+
+export const CONFIG_FILES = [
+  '.eslintrc.js',
+  '.eslintrc.cjs',
+  '.eslintrc.json',
+  '.eslintrc.yml',
+  '.eslintrc.yaml',
+  'eslint.config.js',
+];
+export const eslintIgnoreRules = {
+    "@typescript-eslint/ban-ts-comment": "off",
+    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }]
 }

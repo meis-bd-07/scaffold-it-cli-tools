@@ -4,6 +4,7 @@ export type IFramework = 'React' | 'React Native' | 'React with Vite' | 'Node.js
 export interface IChangeExtensionOpts {
     ignoreDeps: boolean;
     path: string;
+    ignoreTestFile: boolean;
 }
 
 export interface IChangeExtensionCommand {
@@ -11,4 +12,5 @@ export interface IChangeExtensionCommand {
     framework: IFramework;
     packageManager: IPackageManager;
     ignoreDeps?: boolean;
+    ignoreTest?: boolean;
 }

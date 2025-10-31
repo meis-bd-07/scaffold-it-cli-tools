@@ -7,8 +7,8 @@ import { IChangeExtensionOpts, IFramework, IPackageManager } from "types/change-
 
 /* 
     command: 
-        scaffold-it change-extension -p <path> --ignore-deps
-        scaffold-it change-extension --path <path> --ignore-deps
+        scaffold-it change-extension -p <path> --ignore-deps --ignore-test-file
+        scaffold-it change-extension --path <path> --ignore-deps --ignore-test-file
 */
 
 const registerChangeExtension = async (program: Command) => {
@@ -17,9 +17,9 @@ const registerChangeExtension = async (program: Command) => {
         .description('Change .js* files to .ts* in a folder (recursively)')
         .option('-p, --path <path>', 'target folder path', 'src')
         .option('--ignore-deps', 'Ignore dependencies')
+        .option('--ignore-test-file', 'Ignore test file')
         .action(async (opts: IChangeExtensionOpts) => {
             abortCommandHandler();
-            // const folders = await getAllFolders('./', false);
             try{
                 const answers: { target: string; framework: IFramework; package_manager: IPackageManager } = await prompt([
                     {
@@ -69,7 +69,8 @@ const registerChangeExtension = async (program: Command) => {
                     targetDir: answers.target,
                     framework: answers.framework,
                     packageManager: answers.package_manager,
-                    ignoreDeps: opts.ignoreDeps || false
+                    ignoreDeps: opts.ignoreDeps || false,
+                    ignoreTest: opts.ignoreTestFile || true,
                 });
             }
             catch (err: unknown) {

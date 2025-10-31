@@ -20,7 +20,10 @@
       ],
       "@rp/*": [
         "./register-programs/*"
-      ]
+      ],
+      "@types/*": [
+        "./types/*"
+      ],
     }
   },
   "include": [
@@ -29,5 +32,7 @@
   "exclude": [
     "node_modules"
   ],
-  "extends": []
+  "extends": [
+    "./tsconfig.jsonc"
+  ]
 }

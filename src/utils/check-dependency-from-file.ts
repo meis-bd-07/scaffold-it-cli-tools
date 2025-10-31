@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import readJSONFile from './read-json';
-import { IAnyObject } from 'types/core';
+import { IAnyObject } from '@types/type';
 
 type IOptions = {
     fileData?: IAnyObject | null;

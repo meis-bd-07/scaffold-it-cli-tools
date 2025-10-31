@@ -1,5 +1,5 @@
+import { IPackageJsonCore } from "@types/type";
 import chalk from "chalk";
-import { IPackageJsonCore } from "types/core";
 
 const checkDependencyFromJson = (jsonData: IPackageJsonCore = {}, deps: string[] = []) => {
     const allDeps = {...jsonData.dependencies || {}, ...jsonData.devDependencies || {}}
